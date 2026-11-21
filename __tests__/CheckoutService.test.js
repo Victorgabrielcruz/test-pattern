@@ -19,6 +19,7 @@ describe('CheckoutService', () => {
 
             // Assert
             expect(pedido).toBeNull();
+            expect(gatewayStub.cobrar).toHaveBeenCalledTimes(1);
             expect(repositoryDummy.salvar).not.toHaveBeenCalled();
             expect(emailDummy.enviarEmail).not.toHaveBeenCalled();
         });
