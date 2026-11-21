@@ -1,5 +1,6 @@
 import { Carrinho } from '../../src/domain/Carrinho.js';
 import { Item } from '../../src/domain/Item.js';
+import { User } from '../../src/domain/User.js';
 import { UserMother } from './UserMother.js';
 
 export class CarrinhoBuilder {
@@ -9,7 +10,7 @@ export class CarrinhoBuilder {
     }
 
     comUser(user) {
-        this.user = user;
+        this.user = new User(user.id, user.nome, user.email, user.tipo);
         return this;
     }
 
@@ -24,6 +25,9 @@ export class CarrinhoBuilder {
     }
 
     build() {
-        return new Carrinho(this.user, this.itens.map((item) => new Item(item.nome, item.preco)));
+        const { id, nome, email, tipo } = this.user;
+        const user = new User(id, nome, email, tipo);
+        const itens = this.itens.map((item) => new Item(item.nome, item.preco));
+        return new Carrinho(user, itens);
     }
 }

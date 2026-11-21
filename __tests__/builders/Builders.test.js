@@ -25,8 +25,29 @@ test('Builder cria carrinhos padrão, vazios e configuráveis com API fluente', 
     expect(builder.comUser(user)).toBe(builder);
     expect(builder.comItens([new Item('A', 120), new Item('B', 80)])).toBe(builder);
     const carrinho = builder.build();
-    expect(carrinho.user).toBe(user);
+    expect(carrinho.user).toBeInstanceOf(User);
+    expect(carrinho.user).toEqual(user);
     expect(carrinho.calcularTotal()).toBe(200);
+});
+
+test('usuários não são compartilhados com a entrada nem entre construções', () => {
+    // Arrange
+    const user = UserMother.umUsuarioPremium();
+    const builder = new CarrinhoBuilder().comUser(user);
+    const builderPadrao = new CarrinhoBuilder();
+    const primeiro = builder.build();
+
+    // Act
+    user.email = 'alterado@email.com';
+    primeiro.user.tipo = 'PADRAO';
+    builderPadrao.build().user.tipo = 'PREMIUM';
+    const segundo = builder.build();
+
+    // Assert
+    expect(primeiro.user.email).toBe('premium@email.com');
+    expect(segundo.user.email).toBe('premium@email.com');
+    expect(segundo.user.isPremium()).toBe(true);
+    expect(builderPadrao.build().user.isPremium()).toBe(false);
 });
 
 test('itens não são compartilhados com a entrada, outras construções ou builders', () => {
